@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج إدخال بيانات الموظفين</title>
+    <style>
+        /* --- General Styles --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        /* --- Accordion Styles --- */
+        .accordion-button {
+            background-color: #e9ecef;
+            color: #495057;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: right;
+            outline: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .accordion-button:hover, .accordion-button.active {
+            background-color: #ced4da;
+        }
+        .accordion-button::after {
+            content: '+';
+            font-size: 22px;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .accordion-button.active::after {
+            content: "−";
+        }
+        .panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            border-right: 3px solid #007bff;
+            margin-right: 5px;
+        }
+        .panel.show {
+             padding-top: 20px;
+        }
+
+        /* --- Form Grid & Fields --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        label {
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #343a40;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="date"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        /* --- Buttons & Messages --- */
+        #submitBtn {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            margin-top: 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #submitBtn:hover {
+            background-color: #0056b3;
+        }
+        #submitBtn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #message {
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-weight: bold;
+            display: none; /* Hidden by default */
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+
+        /* --- Conditional Fields --- */
+        .hidden-field {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>نموذج إدخال بيانات الموظفين</h1>
+        <form id="dataForm">
+
+            <!-- ================== Section 1: Personal Information ================== -->
+            <button type="button" class="accordion-button active">1. المعلومات الشخصية</button>
+            <div class="panel show">
+                <div class="form-grid">
+                    <div class="form-group"><label for="name">الاسم</label><input type="text" id="name" required></div>
+                    <div class="form-group"><label for="fatherName">اسم الأب</label><input type="text" id="fatherName" required></div>
+                    <div class="form-group"><label for="lastName">الكنية</label><input type="text" id="lastName" required></div>
+                    <div class="form-group"><label for="fullName">الاسم الثلاثي</label><input type="text" id="fullName" required></div>
+                    <div class="form-group"><label for="motherName">اسم الأم ونسبتها</label><input type="text" id="motherName"></div>
+                    <div class="form-group"><label for="birthPlace">مكان الولادة</label><input type="text" id="birthPlace"></div>
+                    <div class="form-group"><label for="dob">تاريخ الولادة</label><input type="date" id="dob"></div>
+                    <div class="form-group"><label for="bloodType">زمرة الدم</label><input type="text" id="bloodType"></div>
+                    <div class="form-group">
+                        <label for="gender">الجنس</label>
+                        <select id="gender"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+                    </div>
+                    <div class="form-group"><label for="localCouncilId">الرقم الوطني (مجلس محلي)</label><input type="text" id="localCouncilId"></div>
+                    <div class="form-group"><label for="oldNationalId">الرقم الوطني (قديم)</label><input type="text" id="oldNationalId"></div>
+                    <div class="form-group"><label for="cardId">رقم البطاقة الشخصية (خلف الهوية)</label><input type="text" id="cardId"></div>
+                    <div class="form-group"><label for="registration">القيد والخانة</label><input type="text" id="registration"></div>
+                    <div class="form-group"><label for="amana">الأمانة</label><input type="text" id="amana"></div>
+                </div>
+            </div>
+
+            <!-- ================== Section 2: Social & Family Status ================== -->
+            <button type="button" class="accordion-button">2. الوضع الاجتماعي والعائلي</button>
+            <div class="panel">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="maritalStatus">الوضع الاجتماعي</label>
+                        <select id="maritalStatus">
+                            <option value="أعزب/عزباء">أعزب/عزباء</option>
+                            <option value="متزوج/متزوجة">متزوج/متزوجة</option>
+                            <option value="مطلق/مطلقة">مطلق/مطلقة</option>
+                            <option value="أرمل/أرملة">أرمل/أرملة</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label for="familyBookId">رقم دفتر العائلة</label><input type="text" id="familyBookId"></div>
+                    <div class="form-group"><label for="wivesCount">عدد الزوجات</label><input type="number" id="wivesCount" min="0"></div>
+                    <div class="form-group"><label for="wifeName">اسم الزوجة الثلاثي</label><input type="text" id="wifeName"></div>
+                    <div class="form-group"><label for="wifeNationalId">الرقم الوطني للزوجة</label><input type="text" id="wifeNationalId"></div>
+                    <div class="form-group">
+                        <label for="isWifeEmployee">هل تعمل الزوجة على ملاك المجمع؟</label>
+                        <select id="isWifeEmployee" onchange="toggleWifeSchool(this.value)">
+                            <option value="لا">لا</option>
+                            <option value="نعم">نعم</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden-field" id="wifeSchoolGroup">
+                        <label for="wifeSchool">اسم مدرسة الزوجة</label>
+                        <input type="text" id="wifeSchool">
+                    </div>
+                    <div class="form-group"><label for="childrenCount">عدد الأولاد</label><input type="number" id="childrenCount" min="0"></div>
+                    <div class="form-group full-width">
+                        <label for="childrenNames">أسماء الأبناء وتواريخ الولادة</label>
+                        <textarea id="childrenNames" placeholder="مثال: أحمد (2010/05/15)، فاطمة (2012/11/20)"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================== Section 3: Job Details ================== -->
+            <button type="button" class="accordion-button">3. تفاصيل الوظيفة</button>
+            <div class="panel">
+                <div class="form-grid">
+                    <div class="form-group"><label for="mainOrgUnit">الوحدة التنظيمية الرئيسية</label><input type="text" id="mainOrgUnit"></div>
+                    <div class="form-group"><label for="schoolName">اسم المدرسة</label><input type="text" id="schoolName"></div>
+                    <div class="form-group"><label for="regiment">الفوج</label><input type="text" id="regiment"></div>
+                    <div class="form-group"><label for="schoolStage">المرحلة التعليمية في المدرسة</label><input type="text" id="schoolStage"></div>
+                    <div class="form-group"><label for="category">الفئة</label><input type="text" id="category"></div>
+                    <div class="form-group">
+                        <label for="jobCapacity">الصفة الوظيفية (المؤهل العلمي)</label>
+                        <select id="jobCapacity">
+                            <option value="" disabled selected>-- اختر المؤهل --</option>
+                            <option value="ماجستير">ماجستير</option>
+                            <option value="دبلوم">دبلوم</option>
+                            <option value="إجازة جامعية">إجازة جامعية</option>
+                            <option value="معهد">معهد</option>
+                            <option value="غير خريج">غير خريج</option>
+                            <option value="ثانوية علمي">ثانوية علمي</option>
+                            <option value="ثانوية أدبي">ثانوية أدبي</option>
+                            <option value="ثانوية شرعية">ثانوية شرعية</option>
+                            <option value="ثانوية صناعية">ثانوية صناعية</option>
+                            <option value="ثانوية تجارية">ثانوية تجارية</option>
+                            <option value="ثانوية فنية">ثانوية فنية</option>
+                            <option value="ثانوية زراعية">ثانوية زراعية</option>
+                            <option value="ثانوية مهنية">ثانوية مهنية</option>
+                            <option value="معلم حرفة">معلم حرفة</option>
+                            <option value="إعدادية">إعدادية</option>
+                            <option value="ابتدائي">ابتدائي</option>
+                            <option value="غير متعلم">غير متعلم</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobTitle">المسمى الوظيفي الحالي</label>
+                        <select id="jobTitle">
+                            <option value="" disabled selected>-- اختر المسمى --</option>
+                            <option value="مدير">مدير</option>
+                            <option value="معاون مدير">معاون مدير</option>
+                            <option value="أمين سر">أمين سر</option>
+                            <option value="مدير غير مفرغ">مدير غير مفرغ</option>
+                            <option value="مرشد نفسي">مرشد نفسي</option>
+                            <option value="أمين مكتبة">أمين مكتبة</option>
+                            <option value="موجه إداري">موجه إداري</option>
+                            <option value="معلم صف">معلم صف</option>
+                            <option value="مدرس">مدرس</option>
+                            <option value="مساعد مدرس">مساعد مدرس</option>
+                            <option value="معلمة روضة">معلمة روضة</option>
+                            <option value="مساعدة روضة">مساعدة روضة</option>
+                            <option value="معلم رياضة">معلم رياضة</option>
+                            <option value="معلم موسيقا">معلم موسيقا</option>
+                            <option value="معلم رسم">معلم رسم</option>
+                            <option value="معلم مهني / صناعي">معلم مهني / صناعي</option>
+                            <option value="إداري">إداري</option>
+                            <option value="مستخدم">مستخدم</option>
+                            <option value="حارس ليلي">حارس ليلي</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">المادة التي يدرسها</label>
+                        <select id="subject">
+                            <option value="" disabled selected>-- اختر المادة --</option>
+                            <option value="لا ينطبق">لا ينطبق</option>
+                            <option value="إداري">إداري</option>
+                            <option value="معلم صف">معلم صف</option>
+                            <option value="لغة عربية">لغة عربية</option>
+                            <option value="إسلامية">إسلامية</option>
+                            <option value="لغة عربية + إسلامية">لغة عربية + إسلامية</option>
+                            <option value="رياضيات">رياضيات</option>
+                            <option value="فيزياء">فيزياء</option>
+                            <option value="كيمياء">كيمياء</option>
+                            <option value="علوم">علوم</option>
+                            <option value="رياضيات + علوم">رياضيات + علوم</option>
+                            <option value="فيزياء + كيمياء">فيزياء + كيمياء</option>
+                            <option value="اجتماعيات">اجتماعيات</option>
+                            <option value="اجتماعيات + علوم">اجتماعيات + علوم</option>
+                            <option value="اجتماعيات + إسلامية">اجتماعيات + إسلامية</option>
+                            <option value="تاريخ">تاريخ</option>
+                            <option value="جغرافيا">جغرافيا</option>
+                            <option value="تاريخ + جغرافيا">تاريخ + جغرافيا</option>
+                            <option value="فلسفة">فلسفة</option>
+                            <option value="لغة إنكليزية">لغة إنكليزية</option>
+                            <option value="لغة تركية">لغة تركية</option>
+                            <option value="لغة فرنسية">لغة فرنسية</option>
+                            <option value="رياضة">رياضة</option>
+                            <option value="موسيقا">موسيقا</option>
+                            <option value="رسم">رسم</option>
+                            <option value="روضة">روضة</option>
+                            <option value="معلوماتية">معلوماتية</option>
+                            <option value="مهني">مهني</option>
+                            <option value="صناعي">صناعي</option>
+                            <option value="مستخدم">مستخدم</option>
+                            <option value="حارس ليلي">حارس ليلي</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label for="classGrade">الصف الذي يدرسه</label><input type="text" id="classGrade"></div>
+                    <div class="form-group">
+                        <label for="weeklyHours">عدد الساعات الأسبوعية</label>
+                        <select id="weeklyHours">
+                            <option value="" disabled selected>-- اختر الساعات --</option>
+                            <option value="0">0 (لا ينطبق)</option>
+                            <option value="15">15</option><option value="16">16</option><option value="17">17</option>
+                            <option value="18">18</option><option value="19">19</option><option value="20">20</option>
+                            <option value="21">21</option><option value="22">22</option><option value="23">23</option>
+                            <option value="24">24</option><option value="25">25</option><option value="26">26</option>
+                            <option value="27">27</option><option value="28">28</option><option value="29">29</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label for="workNature">طبيعة العمل التي يتقاضاها</label><input type="text" id="workNature"></div>
+                    <div class="form-group">
+                        <label for="workLocation">داخل/خارج الصف</label>
+                        <select id="workLocation">
+                            <option value="داخل الصف">داخل الصف</option>
+                            <option value="خارج الصف">خارج الصف</option>
+                            <option value="كلاهما">كلاهما</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label for="cashAccountNumber">رقم حساب كاش</label><input type="text" id="cashAccountNumber"></div>
+                    <div class="form-group"><label for="selfNumber">الرقم الذاتي</label><input type="text" id="selfNumber"></div>
+                    <div class="form-group"><label for="employmentStatus">الوضع الوظيفي</label><input type="text" id="employmentStatus"></div>
+                    <div class="form-group"><label for="healthStatus">الوضع الصحي</label><input type="text" id="healthStatus"></div>
+                </div>
+            </div>
+
+            <!-- ================== Section 4: Academic Qualifications ================== -->
+            <button type="button" class="accordion-button">4. المؤهلات العلمية</button>
+            <div class="panel">
+                <div class="form-grid">
+                    <div class="form-group full-width"><label for="firstCert">الشهادة المعين عليها لأول مرة</label><input type="text" id="firstCert"></div>
+                    <div class="form-group"><label for="firstCertSpec">الاختصاص</label><input type="text" id="firstCertSpec"></div>
+                    <div class="form-group"><label for="firstCertYear">تاريخ الحصول عليها (عام)</label><input type="number" id="firstCertYear" placeholder="YYYY"></div>
+                    <div class="form-group"><label for="firstCertSource">مصدر الشهادة</label><input type="text" id="firstCertSource"></div>
+                    
+                    <div class="form-group full-width"><label for="postHireCerts">الشهادات العلمية بعد التعيين</label><input type="text" id="postHireCerts"></div>
+                    <div class="form-group"><label for="postHireCertsSpec">الاختصاص</label><input type="text" id="postHireCertsSpec"></div>
+                    <div class="form-group"><label for="postHireCertsYear">تاريخ الحصول عليها (عام)</label><input type="number" id="postHireCertsYear" placeholder="YYYY"></div>
+                    <div class="form-group"><label for="postHireCertsSource">مصدر الشهادة</label><input type="text" id="postHireCertsSource"></div>
+
+                    <div class="form-group full-width">
+                        <label for="lastCert">الشهادة العلمية الأخيرة بالتفصيل</label>
+                        <input type="text" id="lastCert" placeholder="مثال: إجازة لغة عربية - ثانوية علمي + سنة رابعة رياضيات">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================== Section 5: Employment History ================== -->
+            <button type="button" class="accordion-button">5. التاريخ الوظيفي</button>
+            <div class="panel">
+                <div class="form-grid">
+                    <div class="form-group"><label for="firstStartDate">تاريخ المباشرة الأولى</label><input type="date" id="firstStartDate"></div>
+                    <div class="form-group"><label for="currentSchoolStartDate">تاريخ المباشرة في المدرسة الحالية</label><input type="date" id="currentSchoolStartDate"></div>
+                    <div class="form-group"><label for="appointmentDecisionId">رقم قرار التعيين في المدرسة الحالية</label><input type="text" id="appointmentDecisionId"></div>
+                    <div class="form-group"><label for="previousPositions">المواقع الوظيفية السابقة</label><input type="text" id="previousPositions"></div>
+                    <div class="form-group"><label for="employmentYear">القدم الوظيفي (عام التوظيف أول مرة)</label><input type="number" id="employmentYear" placeholder="YYYY"></div>
+                    <div class="form-group">
+                        <label for="isComplementing">هل تكمل نصابك في مدرسة أخرى؟</label>
+                        <select id="isComplementing" onchange="toggleOtherSchool(this.value)">
+                            <option value="لا">لا</option>
+                            <option value="نعم">نعم</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden-field" id="otherSchoolGroup">
+                        <label for="otherSchoolName">اسم المدرسة التي تكمل نصابك بها</label>
+                        <input type="text" id="otherSchoolName">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================== Section 6: Residence & Contact ================== -->
+            <button type="button" class="accordion-button">6. الإقامة والتواصل</button>
+            <div class="panel">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="originalProvince">المحافظة الأصلية</label>
+                        <select id="originalProvince">
+                            <option value="" disabled selected>-- اختر المحافظة --</option>
+                            <option value="دمشق">دمشق</option><option value="ريف دمشق">ريف دمشق</option>
+                            <option value="حلب">حلب</option><option value="حمص">حمص</option>
+                            <option value="حماة">حماة</option><option value="ادلب">ادلب</option>
+                            <option value="دير الزور">دير الزور</option><option value="درعا">درعا</option>
+                            <option value="اللاذقية">اللاذقية</option><option value="طرطوس">طرطوس</option>
+                            <option value="الرقة">الرقة</option><option value="الحسكة">الحسكة</option>
+                            <option value="السويداء">السويداء</option><option value="القنيطرة">القنيطرة</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label for="originalCity">المدينة أو القرية الأصلية</label><input type="text" id="originalCity"></div>
+                    <div class="form-group"><label for="currentResidence">مكان الإقامة الحالي</label><input type="text" id="currentResidence"></div>
+                    <div class="form-group"><label for="fullAddress">العنوان بالتفصيل</label><input type="text" id="fullAddress"></div>
+                    <div class="form-group"><label for="phoneNumber">رقم الهاتف / الجوال</label><input type="text" id="phoneNumber"></div>
+                </div>
+            </div>
+
+            <!-- ================== Section 7: Training & General Preferences ================== -->
+            <button type="button" class="accordion-button">7. الدورات والتوجهات العامة</button>
+            <div class="panel">
+                <div class="form-grid">
+                    <div class="form-group full-width"><label for="generalCourses">الدورات التدريبية العامة</label><textarea id="generalCourses"></textarea></div>
+                    <div class="form-group full-width"><label for="specializedCourses">الدورات التدريبية الخاصة</label><textarea id="specializedCourses"></textarea></div>
+                    
+                    <div class="form-group"><label>هل ترغب بالتقاعد (سن 60)؟</label><select id="retireAt60"><option value="لا">لا</option><option value="نعم">نعم</option></select></div>
+                    <div class="form-group"><label>هل ترغب بالتقاعد (25 سنة خدمة)؟</label><select id="retireAfter25"><option value="لا">لا</option><option value="نعم">نعم</option></select></div>
+                    <div class="form-group"><label>هل ترغب بتمديد الخدمة؟</label><select id="extendService"><option value="لا">لا</option><option value="نعم">نعم</option></select></div>
+                    <div class="form-group"><label>هل ترغب بالانتقال لمديرية أخرى؟</label><select id="transferToDirectorate"><option value="لا">لا</option><option value="نعم">نعم</option></select></div>
+                    <div class="form-group"><label>هل ترغب بالانتقال لجهة عامة أخرى؟</label><select id="transferToPublicEntity"><option value="لا">لا</option><option value="نعم">نعم</option></select></div>
+                    <div class="form-group"><label>هل ترغب باستكمال تحصيلك العلمي؟</label><select id="continueEducation"><option value="لا">لا</option><option value="نعم">نعم</option></select></div>
+
+                    <div class="form-group full-width"><label for="notes">الملاحظات</label><textarea id="notes"></textarea></div>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn">
+                إرسال البيانات
+                <div class="spinner"></div>
+            </button>
+            <div id="message"></div>
+        </form>
+    </div>
+
+    <script>
+        // ================== Accordion Logic ==================
+        var acc = document.getElementsByClassName("accordion-button");
+        for (var i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                    panel.classList.remove("show");
+                } else {
+                    // Close other panels
+                    closeAllPanels();
+                    this.classList.add("active"); // Re-activate current button
+                    panel.classList.add("show");
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+
+        function closeAllPanels() {
+            for (var j = 0; j < acc.length; j++) {
+                acc[j].classList.remove("active");
+                var panelToClose = acc[j].nextElementSibling;
+                panelToClose.style.maxHeight = null;
+                panelToClose.classList.remove("show");
+            }
+        }
+        
+        // Open the first panel by default
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelector('.accordion-button.active').nextElementSibling.style.maxHeight = document.querySelector('.accordion-button.active').nextElementSibling.scrollHeight + "px";
+        });
+
+
+        // ================== Conditional Fields Logic ==================
+        function toggleWifeSchool(value) {
+            var wifeSchoolGroup = document.getElementById('wifeSchoolGroup');
+            if (value === 'نعم') {
+                wifeSchoolGroup.style.display = 'block';
+            } else {
+                wifeSchoolGroup.style.display = 'none';
+                document.getElementById('wifeSchool').value = ''; // Clear value when hidden
+            }
+        }
+
+        function toggleOtherSchool(value) {
+            var otherSchoolGroup = document.getElementById('otherSchoolGroup');
+            if (value === 'نعم') {
+                otherSchoolGroup.style.display = 'block';
+            } else {
+                otherSchoolGroup.style.display = 'none';
+                document.getElementById('otherSchoolName').value = ''; // Clear value when hidden
+            }
+        }
+
+        // ================== Form Submission Logic ==================
+        const form = document.getElementById('dataForm');
+        const submitButton = document.getElementById('submitBtn');
+        const spinner = document.querySelector('.spinner');
+        const messageDiv = document.getElementById('message');
+        
+        // !!! IMPORTANT: PASTE YOUR WEB APP URL HERE !!!
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbzwc3CDRh1XPknSl-IfLnjuAuZq95-zaHnJB5LJFQs8HxLAjsjMnRjNnIRfRjYyhE7qBw/exec';
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Basic validation check
+            if (webAppUrl === 'ضع رابط تطبيق الويب الذي نسخته هنا' || webAppUrl === '') {
+                showMessage('يرجى لصق رابط تطبيق الويب في كود HTML (ملف index.html).', 'error');
+                return;
+            }
+
+            // Show spinner and disable button
+            submitButton.disabled = true;
+            spinner.style.display = 'inline-block';
+            messageDiv.style.display = 'none';
+
+            // Collect data from all form fields
+            const formData = {
+                name: document.getElementById('name').value,
+                fatherName: document.getElementById('fatherName').value,
+                lastName: document.getElementById('lastName').value,
+                fullName: document.getElementById('fullName').value,
+                motherName: document.getElementById('motherName').value,
+                birthPlace: document.getElementById('birthPlace').value,
+                dob: document.getElementById('dob').value,
+                bloodType: document.getElementById('bloodType').value,
+                gender: document.getElementById('gender').value,
+                localCouncilId: document.getElementById('localCouncilId').value,
+                oldNationalId: document.getElementById('oldNationalId').value,
+                cardId: document.getElementById('cardId').value,
+                
+// ... (الكود السابق يستمر من هنا)
+                registration: document.getElementById('registration').value,
+                amana: document.getElementById('amana').value,
+                maritalStatus: document.getElementById('maritalStatus').value,
+                familyBookId: document.getElementById('familyBookId').value,
+                wivesCount: document.getElementById('wivesCount').value,
+                wifeName: document.getElementById('wifeName').value,
+                wifeNationalId: document.getElementById('wifeNationalId').value,
+                isWifeEmployee: document.getElementById('isWifeEmployee').value,
+                wifeSchool: document.getElementById('wifeSchool').value,
+                childrenCount: document.getElementById('childrenCount').value,
+                childrenNames: document.getElementById('childrenNames').value,
+                mainOrgUnit: document.getElementById('mainOrgUnit').value,
+                schoolName: document.getElementById('schoolName').value,
+                regiment: document.getElementById('regiment').value,
+                schoolStage: document.getElementById('schoolStage').value,
+                category: document.getElementById('category').value,
+                jobCapacity: document.getElementById('jobCapacity').value,
+                jobTitle: document.getElementById('jobTitle').value,
+                subject: document.getElementById('subject').value,
+                classGrade: document.getElementById('classGrade').value,
+                weeklyHours: document.getElementById('weeklyHours').value,
+                workNature: document.getElementById('workNature').value,
+                workLocation: document.getElementById('workLocation').value,
+                cashAccountNumber: document.getElementById('cashAccountNumber').value,
+                selfNumber: document.getElementById('selfNumber').value,
+                employmentStatus: document.getElementById('employmentStatus').value,
+                healthStatus: document.getElementById('healthStatus').value,
+                firstCert: document.getElementById('firstCert').value,
+                firstCertSpec: document.getElementById('firstCertSpec').value,
+                firstCertYear: document.getElementById('firstCertYear').value,
+                firstCertSource: document.getElementById('firstCertSource').value,
+                postHireCerts: document.getElementById('postHireCerts').value,
+                postHireCertsSpec: document.getElementById('postHireCertsSpec').value,
+                postHireCertsYear: document.getElementById('postHireCertsYear').value,
+                postHireCertsSource: document.getElementById('postHireCertsSource').value,
+                lastCert: document.getElementById('lastCert').value,
+                firstStartDate: document.getElementById('firstStartDate').value,
+                currentSchoolStartDate: document.getElementById('currentSchoolStartDate').value,
+                appointmentDecisionId: document.getElementById('appointmentDecisionId').value,
+                previousPositions: document.getElementById('previousPositions').value,
+                employmentYear: document.getElementById('employmentYear').value,
+                isComplementing: document.getElementById('isComplementing').value,
+                otherSchoolName: document.getElementById('otherSchoolName').value,
+                originalProvince: document.getElementById('originalProvince').value,
+                originalCity: document.getElementById('originalCity').value,
+                currentResidence: document.getElementById('currentResidence').value,
+                fullAddress: document.getElementById('fullAddress').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                generalCourses: document.getElementById('generalCourses').value,
+                specializedCourses: document.getElementById('specializedCourses').value,
+                retireAt60: document.getElementById('retireAt60').value,
+                retireAfter25: document.getElementById('retireAfter25').value,
+                extendService: document.getElementById('extendService').value,
+                transferToDirectorate: document.getElementById('transferToDirectorate').value,
+                transferToPublicEntity: document.getElementById('transferToPublicEntity').value,
+                continueEducation: document.getElementById('continueEducation').value,
+                notes: document.getElementById('notes').value
+            };
+
+            // Send data to Google Apps Script
+            fetch(webAppUrl, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    showMessage('تم إرسال البيانات بنجاح!', 'success');
+                    form.reset(); // Clear the form
+                    // Scroll to top to see the message
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    // Close all panels and open the first one
+                    closeAllPanels();
+                    document.querySelector('.accordion-button').click();
+                } else {
+                    // Show the detailed error from Apps Script if available
+                    showMessage('حدث خطأ أثناء الإرسال: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('حدث خطأ فادح. يرجى مراجعة console.', 'error');
+            })
+            .finally(() => {
+                // Hide spinner and re-enable button
+                submitButton.disabled = false;
+                spinner.style.display = 'none';
+            });
+        });
+
+        function showMessage(msg, type) {
+            messageDiv.textContent = msg;
+            messageDiv.className = type; // 'success' or 'error'
+            messageDiv.style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
